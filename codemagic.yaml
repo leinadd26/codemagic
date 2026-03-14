@@ -1,0 +1,47 @@
+workflows:
+  ios-release:
+    name: Performativez iOS Build
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    integrations:
+      app_store_connect: AC_API_KEY  # optional, nur für App Store nötig
+
+    environment:
+      ios_signing:
+        distribution_type: ad_hoc   # oder: app_store
+        bundle_identifier: com.performativez.app
+      vars:
+        XCODE_PROJECT: "Performativez.xcodeproj"
+        XCODE_SCHEME: "Performativez"
+
+    scripts:
+      - name: Build iOS
+        script: |
+          xcode-project use-profiles
+          xcodebuild \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Release \
+            -archivePath "$CM_BUILD_DIR/Performativez.xcarchive" \
+            archive \
+            CODE_SIGN_STYLE=Automatic \
+            | xcpretty
+
+      - name: Export IPA
+        script: |
+          xcode-project build-ipa \
+            --project "$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      email:
+        recipients:
+          - deine@email.com   # ← hier deine E-Mail eintragen
+        notify:
+          success: true
+          failure: true
