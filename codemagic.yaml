@@ -41,7 +41,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - deine@email.com   # ← hier deine E-Mail eintragen
+          - z.daniel2604@gmail.com   # ← hier deine E-Mail eintragen
         notify:
           success: true
           failure: true
